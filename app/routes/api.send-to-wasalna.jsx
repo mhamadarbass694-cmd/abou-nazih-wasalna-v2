@@ -21,6 +21,7 @@ export async function action({ request }) {
   try {
     ({ admin, cors } = await authenticate.admin(request));
   } catch (error) {
+    console.error("AUTH ERROR:", error);
     return new Response(
       JSON.stringify({
         error: "AUTH FAILED",
