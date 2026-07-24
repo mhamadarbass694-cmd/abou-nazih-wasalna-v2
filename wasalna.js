@@ -2,18 +2,38 @@ import { chromium } from "playwright";
 
 export async function sendToWasalna(order) {
   const context = await chromium.launchPersistentContext(
-    "C:\\Users\\Dell\\Playwright\\wasalna-profile",
-    {
-      headless: false,
-      slowMo: 300,
-    }
+  "/tmp/wasalna-profile",
+  {
+    headless: true,
+  },
+);
+
+const page = await context.newPage();
+
+await page.goto("https://www.wasalnacashdelivery.com/clients/", {
+  waitUntil: "networkidle",
+});
+
+if (await page.locator('input[type="password"]').count()) {
+  await page.locator('input[type="text"]').first().fill(
+    process.env.WASALNA_EMAIL,
   );
 
-  const page = await context.newPage();
+  await page.locator('input[type="password"]').fill(
+    process.env.WASALNA_PASSWORD,
+  );
 
-  console.log(order);
+  await page.getByRole("button", { name: "Sign in" }).click();
 
-  await page.goto("https://www.wasalnacashdelivery.com/clients/orders/add.php");
+  await page.waitForLoadState("networkidle");
+}
+
+await page.goto(
+  "https://www.wasalnacashdelivery.com/clients/orders/add.php",
+  {
+    waitUntil: "networkidle",
+  },
+);
 
   // Phone
 let phone = order.phone.replace(/\D/g, "").replace(/^961/, "");
@@ -83,7 +103,6 @@ await page
 
 console.log("Reference ID:", referenceId);
 
-await page.pause();
 
   // await context.close();
 
