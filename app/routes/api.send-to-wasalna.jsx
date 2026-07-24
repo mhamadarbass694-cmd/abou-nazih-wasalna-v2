@@ -13,7 +13,23 @@ export async function loader() {
 }
 
 export async function action({ request }) {
-  const { admin } = await authenticate.admin(request);
+  let admin;
+
+try {
+  const result = await authenticate.admin(request);
+  admin = result.admin;
+} catch (error) {
+  console.log("AUTH ERROR:", error);
+  return new Response(
+    JSON.stringify({ error: "AUTH FAILED" }),
+    {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+      },
+    },
+  );
+}
 
   const { orderId } = await request.json();
 
