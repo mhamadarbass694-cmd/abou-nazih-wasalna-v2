@@ -7,14 +7,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "Content-Type, Authorization",
 };
 
-export async function loader({ request }) {
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
+export async function loader() {
   return new Response(null, {
     status: 204,
     headers: corsHeaders,
@@ -22,24 +15,17 @@ export async function loader({ request }) {
 }
 
 export async function action({ request }) {
-  if (request.method === "OPTIONS") {
-    return new Response(null, {
-      status: 204,
-      headers: corsHeaders,
-    });
-  }
-
+  let admin;
+  let cors;
 
   try {
-   const { admin, cors } = await authenticate.admin(request);
+    ({ admin, cors } = await authenticate.admin(request));
   } catch (error) {
-    console.log("AUTH ERROR:", error);
-
-   return cors(
-  Response.json({
-    success: true,
-  }),
-);
+    return new Response(
+      JSON.stringify({
+        error: "AUTH FAILED",
+        details: error.message,
+      }),
       {
         status: 401,
         headers: {
@@ -57,7 +43,6 @@ export async function action({ request }) {
     query GetOrder($id: ID!) {
       order(id: $id) {
         name
-
         shippingAddress {
           firstName
           lastName
@@ -67,7 +52,6 @@ export async function action({ request }) {
           city
           province
         }
-
         totalPriceSet {
           shopMoney {
             amount
@@ -83,10 +67,7 @@ export async function action({ request }) {
   );
 
   const { data } = await response.json();
-
   const order = data.order;
-
-  console.log("Sending to Wasalna...");
 
   await sendToWasalna({
     phone: order.shippingAddress?.phone || "",
@@ -99,18 +80,9 @@ export async function action({ request }) {
     price: order.totalPriceSet.shopMoney.amount,
   });
 
-  console.log("Wasalna finished");
-
-  return new Response(
-    JSON.stringify({
+  return cors(
+    Response.json({
       success: true,
     }),
-    {
-      status: 200,
-      headers: {
-        ...corsHeaders,
-        "Content-Type": "application/json",
-      },
-    },
   );
 }
