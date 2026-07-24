@@ -15,6 +15,16 @@ export async function loader() {
 }
 
 export async function action({ request }) {
+    const authorization = request.headers.get("Authorization");
+  const token = authorization?.replace(/^Bearer\s+/i, "");
+
+  if (token) {
+    const payload = JSON.parse(
+      Buffer.from(token.split(".")[1], "base64url").toString("utf8"),
+    );
+
+    console.log("TOKEN AUDIENCE:", payload.aud);
+  }
   let admin;
   let cors;
 
