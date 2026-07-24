@@ -9,26 +9,25 @@ function Extension() {
   const { close, data } = shopify;
 
   async function send() {
-    try {
-      const response = await fetch("/api/send-to-wasalna", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          orderId: data.selected[0].id,
-        }),
-      });
+  try {
+    const response = await fetch("/api/send-to-wasalna", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        orderId: data.selected[0].id,
+      }),
+    });
 
-      const result = await response.json();
+    const result = await response.json();
+    console.log("Response:", result);
 
-      console.log(result);
-
-      close();
-    } catch (e) {
-      console.error(e);
-    }
+    close();
+  } catch (error) {
+    console.error("Send error:", error);
   }
+}
 
   return (
     <s-admin-action title="Send to Wasalna">

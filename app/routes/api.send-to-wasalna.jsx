@@ -29,19 +29,17 @@ export async function action({ request }) {
     });
   }
 
-  let admin;
 
   try {
-    const result = await authenticate.admin(request);
-    admin = result.admin;
+   const { admin, cors } = await authenticate.admin(request);
   } catch (error) {
     console.log("AUTH ERROR:", error);
 
-    return new Response(
-      JSON.stringify({
-        error: "AUTH FAILED",
-        details: error.message,
-      }),
+   return cors(
+  Response.json({
+    success: true,
+  }),
+);
       {
         status: 401,
         headers: {
