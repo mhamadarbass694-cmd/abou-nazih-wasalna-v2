@@ -1,35 +1,56 @@
 import { authenticate } from "../shopify.server";
 import { sendToWasalna } from "../../wasalna.js";
 
-export async function loader() {
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "https://extensions.shopifycdn.com",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type, Authorization",
+};
+
+export async function loader({ request }) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
   return new Response(null, {
     status: 204,
-    headers: {
-      "Access-Control-Allow-Origin": "https://extensions.shopifycdn.com",
-      "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    },
+    headers: corsHeaders,
   });
 }
 
 export async function action({ request }) {
+  if (request.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders,
+    });
+  }
+
   let admin;
 
-try {
-  const result = await authenticate.admin(request);
-  admin = result.admin;
-} catch (error) {
-  console.log("AUTH ERROR:", error);
-  return new Response(
-    JSON.stringify({ error: "AUTH FAILED" }),
-    {
-      status: 401,
-      headers: {
-        "Content-Type": "application/json",
+  try {
+    const result = await authenticate.admin(request);
+    admin = result.admin;
+  } catch (error) {
+    console.log("AUTH ERROR:", error);
+
+    return new Response(
+      JSON.stringify({
+        error: "AUTH FAILED",
+        details: error.message,
+      }),
+      {
+        status: 401,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json",
+        },
       },
-    },
-  );
-}
+    );
+  }
 
   const { orderId } = await request.json();
 
@@ -87,11 +108,10 @@ try {
       success: true,
     }),
     {
+      status: 200,
       headers: {
+        ...corsHeaders,
         "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "https://extensions.shopifycdn.com",
-        "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
     },
   );
