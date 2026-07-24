@@ -2,7 +2,7 @@
 
 client_id = "6c9a87f55df7093e8668da27bf8230b0"
 name = "AbouNazih Wasalna"
-application_url = "https://larger-begin-forecasts-treating.trycloudflare.com"
+application_url = "https://abou-nazih-wasalna-v2.onrender.com"
 embedded = true
 
 [build]

@@ -7,7 +7,7 @@ export async function loader() {
     headers: {
       "Access-Control-Allow-Origin": "https://extensions.shopifycdn.com",
       "Access-Control-Allow-Methods": "POST, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
     },
   });
 }
@@ -75,7 +75,7 @@ export async function action({ request }) {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "https://extensions.shopifycdn.com",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
     },
   );
